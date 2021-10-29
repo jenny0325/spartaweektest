@@ -11,6 +11,7 @@ client = MongoClient("mongodb://localhost:27017/")
 db = client.dbStock
 SECRET_KEY = 'SPARTA'
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
