@@ -13,6 +13,7 @@ db = client.dbStock
 secret = "secrete"
 algorithm = "HS256"
 
+
 def login_check(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -42,6 +43,7 @@ def login_check(f):
 def get_user_info(user_id):
     return db.user.find_one({"id": user_id})
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -64,7 +66,8 @@ def save_post():
         'content': content,
         'read_count': 0,
         'writer': (g.user_id if hasattr(g, 'user_id') else ''),
-        'reg_date': datetime.now()
+        'reg_date': datetime.now(),
+        'comment': list()
     }
     db.article.insert_one(post)
     return {"result": "success"}
@@ -169,6 +172,16 @@ def login_user():
         return jsonify({"result": "success", "token": token})
     else:
         return Response(status=401)
+
+
+@app.route('/article/comment/<idx>', methods=['PUT'])
+def save_comment(idx):
+    post_idx = request.form.get('post_idx')
+    comment = request.form.get('comment_give')
+
+    db.article.update_one({'idx': int(post_idx)}, {'$push': {'comment': comment}})
+    article = db.article.find_one({'idx': int(post_idx)}, {'_id': False})
+    return jsonify({"article": article})
 
 
 if __name__ == "__main__":

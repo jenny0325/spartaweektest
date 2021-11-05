@@ -193,6 +193,13 @@
                     let content = response['article']['content']
                     $('#modal-title').html(title);
                     $('#modal-content').html(content);
+                    $('#modal-idx').val(idx);
+
+                    for(let i=0; i<response['article']['comment'].length;i++) {
+                        let comment_html = `<div class="modal-body">${response['article']['comment'][i]}</div>`
+                        $('#modal-comment').append(comment_html);
+                    }
+
                     $('#articleModal').modal('show');
                 }
             })
@@ -313,6 +320,28 @@
             listType = type;
             showArticles(1);
         }
+
+        function saveComment(){
+            let post_idx = $('#modal-idx').val();
+            let comment_give = $('#comment').val();
+
+            $.ajax({
+                type: "PUT",
+                url: `/article/comment/${post_idx}`,
+                data: {
+                    post_idx: post_idx,
+                    comment_give: comment_give
+                },
+                success: function (response) {
+                    $('#comment').val('');
+                    alert("댓글 작성 완료!");
+                    readArticle(post_idx)
+                }
+            })
+        }
+
+
+
     </script>
 
 </head>
